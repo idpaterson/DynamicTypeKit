@@ -151,8 +151,8 @@ static NSArray * _protectedAttributesForStyledFonts;
 
 + (UIFontDescriptor *)DTK_fontDescriptorByInterpolatingDescriptors:(NSMutableDictionary *)descriptorsByContentSizeCategory toContentSizeCategory:(NSString *)contentSizeCategory
 {
-    NSArray  * contentSizeCategories = [UIApplication sharedApplication].DTK_contentSizeCategories;
-    NSUInteger index                 = [contentSizeCategories indexOfObject:contentSizeCategory];
+    NSArray * contentSizeCategories = [UIApplication sharedApplication].DTK_contentSizeCategories;
+    NSInteger index                 = [contentSizeCategories indexOfObject:contentSizeCategory];
 
     if (index != NSNotFound)
     {
@@ -160,8 +160,8 @@ static NSArray * _protectedAttributesForStyledFonts;
         CGFloat            lesserSize           = -1.0f;
         CGFloat            greaterSize          = -1.0f;
         CGFloat            interpolatedSize     = 0.0f;
-        NSUInteger         lesserIndex          = NSNotFound;
-        NSUInteger         greaterIndex         = NSNotFound;
+        NSInteger          lesserIndex          = NSNotFound;
+        NSInteger          greaterIndex         = NSNotFound;
         NSString         * aContentSizeCategory;
         UIFontDescriptor * referenceDescriptor;
         UIFontDescriptor * descriptor;

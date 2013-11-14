@@ -160,4 +160,20 @@
 
 #pragma mark - Interpolation tests
 
+- (void)testInterpolationToLessThanNormalSize
+{
+    [self registerABCTextStyles];
+
+    NSString * textStyle = @"A";
+    UIApplication * application = [UIApplication sharedApplication];
+    UIFontDescriptor * beforeDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
+
+    application.DTK_preferredContentSizeCategory = UIContentSizeCategoryExtraSmall;
+
+    UIFontDescriptor * afterDescriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
+
+    assertThat(@(afterDescriptor.pointSize), lessThan(@(beforeDescriptor.pointSize)));
+    assertThat(@(afterDescriptor.pointSize), greaterThan(@0));
+}
+
 @end
