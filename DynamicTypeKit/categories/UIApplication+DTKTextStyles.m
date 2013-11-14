@@ -70,6 +70,22 @@ static const NSUInteger _indexOfFirstAccessibilitySizeCategory = 7;
     return index - _indexOfDefaultSizeCategory;
 }
 
+- (NSString *)DTK_contentSizeCategoryByDistanceFromDefault:(NSInteger)distance
+{
+    NSInteger contentSizeIndex = _indexOfDefaultSizeCategory + distance;
+
+    if (contentSizeIndex < 0)
+    {
+        contentSizeIndex = 0;
+    }
+    else if (contentSizeIndex >= _contentSizeCategories.count)
+    {
+        contentSizeIndex = _contentSizeCategories.count - 1;
+    }
+
+    return _contentSizeCategories[contentSizeIndex];
+}
+
 - (CGFloat)DTK_preferredContentSizeCategoryStandardFontSizeMultiplier
 {
     UIFontDescriptor * bodyFontDescriptor  = [UIFontDescriptor preferredFontDescriptorWithTextStyle:UIFontTextStyleBody];

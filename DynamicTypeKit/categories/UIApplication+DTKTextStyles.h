@@ -30,6 +30,24 @@
 /// @return An integer in the range [-3, 8]
 - (NSInteger)DTK_preferredContentSizeCategoryDistanceFromDefault;
 
+/// Provides the size category corresponding to the provided distance from the
+/// default style.
+///
+/// This is particularly useful for implementing a text size slider where it is
+/// necessary to map between numeric slider values and content size category
+/// strings.
+///
+/// If the distance is outside the bounds, such as -4 or 9, the smallest or
+/// largest content size category will be returned, respectively.
+///
+/// @param distance the number of sizes away from the default size which is
+/// `UIContentSizeCategoryLarge`.
+///
+/// @return a valid `UIContentSizeCategory*` string
+///
+/// @see DTK_preferredContentSizeCategoryDistanceFromDefault
+- (NSString *)DTK_contentSizeCategoryByDistanceFromDefault:(NSInteger)distance;
+
 /// Calculates and returns the ratio of the system body style font in the
 /// current preferred content size category compared to the size in the default
 /// content size category.
