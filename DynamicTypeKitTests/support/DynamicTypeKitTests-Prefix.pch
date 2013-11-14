@@ -1,0 +1,18 @@
+//
+//  DynamicTypeKitTests-Prefix.pch
+//  DynamicTypeKit
+//
+//  Created by Ian Paterson on 11/13/13.
+//  Copyright (c) 2013 Ian Paterson. All rights reserved.
+//
+
+#ifndef DynamicTypeKit_DynamicTypeKitTests_Prefix_pch
+#define DynamicTypeKit_DynamicTypeKitTests_Prefix_pch
+
+#define HC_SHORTHAND
+#import <OCHamcrest/OCHamcrest.h>
+
+#define MOCKITO_SHORTHAND
+#import <OCMockito/OCMockito.h>
+
+#endif
