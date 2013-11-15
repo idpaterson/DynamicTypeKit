@@ -131,9 +131,6 @@
     NSNumber           * contentSizeMultiplier;
     NSNumber           * contentSizeDistanceFromDefault;
 
-    // Records the size category for the most recent layout
-    _preferredContentSizeCategory = contentSizeCategory;
-
     if ([_delegate respondsToSelector:@selector(dynamicTypeManager:willUpdateContentSizeInViews:)])
     {
         [_delegate dynamicTypeManager:self willUpdateContentSizeInViews:views];
@@ -275,7 +272,7 @@
 
 #pragma mark - NSNotificationCenter notifications
 
-- (void)preferredContentSizeDidChange:(NSNotification *)notification
+- (void)preferredContentSizeDidChange
 {
     // The content size may change multiple times. If it changes back to the same
     // size for which the layout was prepared, there is no need to update the
@@ -310,7 +307,10 @@
         }
         
         _needsUpdate = NO;
-        
+
+        // Record the size category for the most recent complete UI layout
+        _preferredContentSizeCategory = [UIApplication sharedApplication].preferredContentSizeCategory;
+
         [self updateFontsInViewsForPreferredContentSizeCategory:rootViews];
     }
 }
