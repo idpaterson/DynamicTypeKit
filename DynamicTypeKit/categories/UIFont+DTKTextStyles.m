@@ -15,7 +15,7 @@
 #import <objc/runtime.h>
 
 // An associated object allowing the text style to be stored in a UIFont instance
-static void * const DTKTextStyleAttribute;
+static char DTKTextStyleAttribute;
 
 @implementation UIFont (DTKTextStyles)
 
@@ -153,7 +153,7 @@ static void * const DTKTextStyleAttribute;
 {
     [self willChangeValueForKey:@"DTK_textStyle"];
 
-    objc_setAssociatedObject(self, DTKTextStyleAttribute,
+    objc_setAssociatedObject(self, &DTKTextStyleAttribute,
                              textStyle, OBJC_ASSOCIATION_COPY_NONATOMIC);
     
     [self didChangeValueForKey:@"DTK_textStyle"];
@@ -161,7 +161,7 @@ static void * const DTKTextStyleAttribute;
 
 - (NSString *)DTK_textStyle
 {
-    NSString * textStyle = objc_getAssociatedObject(self, DTKTextStyleAttribute);
+    NSString * textStyle = objc_getAssociatedObject(self, &DTKTextStyleAttribute);
     
     return textStyle;
 }

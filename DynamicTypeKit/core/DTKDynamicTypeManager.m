@@ -49,32 +49,36 @@
 
 - (void)beginTrackingDynamicType
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(preferredContentSizeDidChange:)
-                                                 name:UIContentSizeCategoryDidChangeNotification
-                                               object:nil];
+    NSNotificationCenter * notificationCenter = [NSNotificationCenter defaultCenter];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(willEnterForeground)
-                                                 name:UIApplicationWillEnterForegroundNotification
-                                               object:nil];
+    [notificationCenter addObserver:self
+                           selector:@selector(preferredContentSizeDidChange)
+                               name:UIContentSizeCategoryDidChangeNotification
+                             object:nil];
+
+    [notificationCenter addObserver:self
+                           selector:@selector(willEnterForeground)
+                               name:UIApplicationWillEnterForegroundNotification
+                             object:nil];
+
+    self.trackingDynamicType = YES;
 
     // If tracking was paused, the content size may have changed. Make sure that
     // the view hierarchy is up-to-date with the current content size.
-    [self preferredContentSizeDidChange:nil];
-
-    self.trackingDynamicType = YES;
+    [self preferredContentSizeDidChange];
 }
 
 - (void)endTrackingDynamicType
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIContentSizeCategoryDidChangeNotification
-                                                  object:nil];
+    NSNotificationCenter * notificationCenter = [NSNotificationCenter defaultCenter];
 
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIApplicationWillEnterForegroundNotification
-                                                  object:nil];
+    [notificationCenter removeObserver:self
+                                  name:UIContentSizeCategoryDidChangeNotification
+                                object:nil];
+
+    [notificationCenter removeObserver:self
+                                  name:UIApplicationWillEnterForegroundNotification
+                                object:nil];
 
     self.trackingDynamicType = NO;
 }

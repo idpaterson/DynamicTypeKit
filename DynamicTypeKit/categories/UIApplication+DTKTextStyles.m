@@ -8,10 +8,13 @@
 
 #import "UIApplication+DTKTextStyles.h"
 
+#import "DTKDynamicTypeManager.h"
+
 #import <JRSwizzle.h>
 #import <objc/runtime.h>
 
-static void * const DTKPreferredContentSizeCategoryAttribute;
+static char DTKPreferredContentSizeCategoryAttribute;
+static char DTKPreferredContentSizeCategoryBeforeSilencingAttribute;
 
 // An array of the content size category strings in ascending size order
 static NSArray * _contentSizeCategories;
@@ -112,7 +115,7 @@ static const NSUInteger _indexOfFirstAccessibilitySizeCategory = 7;
 
 - (NSString *)DTK_preferredContentSizeCategory
 {
-    NSString * preferredContentSizeCategory = objc_getAssociatedObject(self, DTKPreferredContentSizeCategoryAttribute);
+    NSString * preferredContentSizeCategory = objc_getAssociatedObject(self, &DTKPreferredContentSizeCategoryAttribute);
 
     if (preferredContentSizeCategory)
     {
@@ -133,20 +136,24 @@ static const NSUInteger _indexOfFirstAccessibilitySizeCategory = 7;
 
     [self willChangeValueForKey:@"preferredContentSizeCategory"];
 
-    objc_setAssociatedObject(self, DTKPreferredContentSizeCategoryAttribute,
+    objc_setAssociatedObject(self, &DTKPreferredContentSizeCategoryAttribute,
                              preferredContentSizeCategory, OBJC_ASSOCIATION_COPY_NONATOMIC);
 
     [self didChangeValueForKey:@"preferredContentSizeCategory"];
 
-    if ([NSThread isMainThread])
+    // Emit the change notification, unless it is silenced
+    if (!self.DTK_isSilencingPreferredContentSizeChangeNotifications)
     {
-        [self DTK_preferredContentSizeCategoryDidChange:preferredContentSizeCategory];
-    }
-    else
-    {
-        dispatch_async(dispatch_get_main_queue(), ^{
+        if ([NSThread isMainThread])
+        {
             [self DTK_preferredContentSizeCategoryDidChange:preferredContentSizeCategory];
-        });
+        }
+        else
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self DTK_preferredContentSizeCategoryDidChange:preferredContentSizeCategory];
+            });
+        }
     }
 }
 
@@ -154,7 +161,7 @@ static const NSUInteger _indexOfFirstAccessibilitySizeCategory = 7;
 {
     if (!newCategory)
     {
-        newCategory = [NSNull null];
+        newCategory = self.preferredContentSizeCategory;
     }
 
     NSDictionary * userInfo = @{
@@ -164,6 +171,55 @@ static const NSUInteger _indexOfFirstAccessibilitySizeCategory = 7;
     [[NSNotificationCenter defaultCenter] postNotificationName:UIContentSizeCategoryDidChangeNotification
                                                         object:self
                                                       userInfo:userInfo];
+}
+
+- (NSString *)DTK_preferredContentSizeCategoryBeforeSilencing
+{
+    return objc_getAssociatedObject(self, &DTKPreferredContentSizeCategoryBeforeSilencingAttribute);
+}
+
+- (void)setDTK_preferredContentSizeCategoryBeforeSilencing:(NSString *)preferredContentSizeCategoryBeforeSilencing
+{
+    [self willChangeValueForKey:@"preferredContentSizeCategoryBeforeSilencing"];
+
+    objc_setAssociatedObject(self, &DTKPreferredContentSizeCategoryBeforeSilencingAttribute,
+                             preferredContentSizeCategoryBeforeSilencing, OBJC_ASSOCIATION_COPY_NONATOMIC);
+
+    [self didChangeValueForKey:@"preferredContentSizeCategoryBeforeSilencing"];
+}
+
+- (BOOL)DTK_isSilencingPreferredContentSizeChangeNotifications
+{
+    return self.DTK_preferredContentSizeCategoryBeforeSilencing != nil;
+}
+
+- (void)DTK_beginSilencingPreferredContentSizeChangeNotifications
+{
+    if (!self.DTK_preferredContentSizeCategoryBeforeSilencing)
+    {
+        self.DTK_preferredContentSizeCategoryBeforeSilencing = self.preferredContentSizeCategory;
+    }
+}
+
+- (void)DTK_endSilencingPreferredContentSizeChangeNotifications
+{
+    NSString * preferredContentSizeCategoryBeforeSilencing = self.DTK_preferredContentSizeCategoryBeforeSilencing;
+
+    self.DTK_preferredContentSizeCategoryBeforeSilencing = nil;
+
+    if (![preferredContentSizeCategoryBeforeSilencing isEqualToString:self.preferredContentSizeCategory])
+    {
+        if ([NSThread isMainThread])
+        {
+            [self DTK_preferredContentSizeCategoryDidChange:self.preferredContentSizeCategory];
+        }
+        else
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self DTK_preferredContentSizeCategoryDidChange:self.preferredContentSizeCategory];
+            });
+        }
+    }
 }
 
 @end

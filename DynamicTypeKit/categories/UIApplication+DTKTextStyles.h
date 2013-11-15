@@ -69,6 +69,23 @@
 /// larger.
 - (BOOL)DTK_isContentSizeCategorySizedForAccessibility:(NSString *)contentSizeCategory;
 
+/// Prevents emission of content size change notifications until the silencing
+/// is ended.
+///
+/// Notifications due to changes in Settings.app are not silenced.
+- (void)DTK_beginSilencingPreferredContentSizeChangeNotifications;
+
+/// Ends silencing of the preferred content size change notifications and emits
+/// a change notification if the content size changed since the call to
+/// <DTK_beginSilencingPreferredContentSizeChangeNotifications>.
+- (void)DTK_endSilencingPreferredContentSizeChangeNotifications;
+
+/// Tests whether preferred content size notifications are currently silenced.
+///
+/// @return `YES` if a change to the preferred content size would not currently
+/// emit a notification.
+- (BOOL)DTK_isSilencingPreferredContentSizeChangeNotifications;
+
 #pragma mark - Modifying the preferredContentSizeCategory
 /// @name      Modifying the preferredContentSizeCategory
 

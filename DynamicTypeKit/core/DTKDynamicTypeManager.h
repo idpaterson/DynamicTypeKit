@@ -46,6 +46,10 @@
 ///
 /// If the preferred content size changed while tracking was disabled, calling
 /// `beginTrackingDynamicType` will immediately update the UI for the new size.
+/// Note that while the UI will be updated, this does not emit a change
+/// notification if the preferred content type has changed.
+///
+/// @see DTK_endSilencingPreferredContentSizeChangeNotifications
 - (void)beginTrackingDynamicType;
 
 /// Causes the app to stop observing the notifications that are emitted due to
@@ -55,6 +59,16 @@
 /// the preferred content size changes. However, any new fonts created after
 /// changing the preferred content size will reflect the new size, regardless
 /// of whether `DTKDynamicTypeManager` is tracking.
+///
+/// This does not prevent preferred content size change notifications from being
+/// emitted. Views that observe the notification and automatically update their
+/// contents, such as `UIWebView`, will continue to do so even if the
+/// `DTKDynamicTypeManager` is not tracking changes. To disable notifications
+/// for the purpose of showing only a preview of font size changes, use
+/// <DTK_beginSilencingPreferredContentSizeChangeNotifications> in
+/// addition to `endTrackingDynamicType`.
+///
+/// @see DTK_beginSilencingPreferredContentSizeChangeNotifications
 - (void)endTrackingDynamicType;
 
 /// Updates fonts associated with views or attributed strings among all
