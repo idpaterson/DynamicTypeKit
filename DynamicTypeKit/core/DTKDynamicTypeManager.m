@@ -160,6 +160,7 @@
             {
                 NSMutableAttributedString * newAttributedText = attributedText.mutableCopy;
                 __block BOOL                didChangeFont     = NO;
+                __block NSUInteger          numberOfRanges    = 0;
 
                 [attributedText enumerateAttributesInRange:NSMakeRange(0, attributedText.length)
                                                    options:0
@@ -176,9 +177,29 @@
                                                         [newAttributedText setAttributes:newAttributes range:range];
                                                         didChangeFont = YES;
                                                     }
+                                                    numberOfRanges++;
                                                 }];
 
-                if (didChangeFont)
+                // If the attributed text has only one range, it is more
+                // effective to change the font at the view level than at the
+                // attributed string level. There were numerous cases of views
+                // where attributedText was not used directly and changes to the
+                // attributedText did not work.
+                if (numberOfRanges <= 1)
+                {
+                    newFont = [self fontByUpdatingDynamicTypeFontIfNecessary:font];
+
+                    if (font != newFont)
+                    {
+                        [view setFont:newFont];
+
+                        [view invalidateIntrinsicContentSize];
+                        [view setNeedsLayout];
+                    }
+                }
+                // Otherwise set the attributed string for which at least one of
+                // the attribute ranges been updated.
+                else if (didChangeFont)
                 {
                     [view setAttributedText:newAttributedText];
 
