@@ -9,6 +9,7 @@
 #import "DTKDynamicTypeManager.h"
 
 #import "UIApplication+DTKTextStyles.h"
+#import "UIView+DTKContentSizeMonitoring.h"
 
 #define getPreferredContentSizeCategory() [UIApplication sharedApplication].preferredContentSizeCategory
 
@@ -147,6 +148,8 @@
 
         viewClass = [view class];
         subviews  = [view subviews];
+
+        [view setDTK_lastKnownContentSizeCategory:contentSizeCategory];
 
         // Classes that support -font and -setFont:
         if ([viewClass isSubclassOfClass:labelClass] ||

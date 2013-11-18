@@ -21,6 +21,7 @@
 		3C4BBA721835111300C43345 /* libPods-JRSwizzle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C4BBA711835111300C43345 /* libPods-JRSwizzle.a */; };
 		3C4BBA751835112400C43345 /* libPods-OCHamcrest.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C4BBA731835112400C43345 /* libPods-OCHamcrest.a */; };
 		3C4BBA761835112400C43345 /* libPods-OCMockito.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C4BBA741835112400C43345 /* libPods-OCMockito.a */; };
+		3C5BF95718397BBB00159EF0 /* UIView+DTKContentSizeMonitoring.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C5BF95618397BBB00159EF0 /* UIView+DTKContentSizeMonitoring.m */; };
 		3CC281AB1833D4AD00CADB0C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CC281AA1833D4AD00CADB0C /* Foundation.framework */; };
 		3CC281B91833D4AD00CADB0C /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CC281B81833D4AD00CADB0C /* XCTest.framework */; };
 		3CC281BA1833D4AD00CADB0C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CC281AA1833D4AD00CADB0C /* Foundation.framework */; };
@@ -95,6 +96,8 @@
 		3C4BBA711835111300C43345 /* libPods-JRSwizzle.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-JRSwizzle.a"; path = "Pods/build/Debug-iphoneos/libPods-JRSwizzle.a"; sourceTree = "<group>"; };
 		3C4BBA731835112400C43345 /* libPods-OCHamcrest.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-OCHamcrest.a"; path = "Pods/build/Debug-iphoneos/libPods-OCHamcrest.a"; sourceTree = "<group>"; };
 		3C4BBA741835112400C43345 /* libPods-OCMockito.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-OCMockito.a"; path = "Pods/build/Debug-iphoneos/libPods-OCMockito.a"; sourceTree = "<group>"; };
+		3C5BF95518397BBB00159EF0 /* UIView+DTKContentSizeMonitoring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+DTKContentSizeMonitoring.h"; sourceTree = "<group>"; };
+		3C5BF95618397BBB00159EF0 /* UIView+DTKContentSizeMonitoring.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+DTKContentSizeMonitoring.m"; sourceTree = "<group>"; };
 		3CC281A71833D4AD00CADB0C /* libDynamicTypeKit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libDynamicTypeKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3CC281AA1833D4AD00CADB0C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		3CC281AF1833D4AD00CADB0C /* DynamicTypeKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DynamicTypeKit.h; sourceTree = "<group>"; };
@@ -279,6 +282,8 @@
 				3C498D4C1833FC9000F4B7C5 /* UIFontDescriptor+DTKTextStylesProtected.h */,
 				3C498D4D1833FD6400F4B7C5 /* UIApplication+DTKTextStyles.h */,
 				3C498D4E1833FD6400F4B7C5 /* UIApplication+DTKTextStyles.m */,
+				3C5BF95518397BBB00159EF0 /* UIView+DTKContentSizeMonitoring.h */,
+				3C5BF95618397BBB00159EF0 /* UIView+DTKContentSizeMonitoring.m */,
 			);
 			path = categories;
 			sourceTree = "<group>";
@@ -461,6 +466,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3CC281ED1833D7E400CADB0C /* DTKDynamicTypeManager.m in Sources */,
+				3C5BF95718397BBB00159EF0 /* UIView+DTKContentSizeMonitoring.m in Sources */,
 				3C498D4F1833FD6400F4B7C5 /* UIApplication+DTKTextStyles.m in Sources */,
 				3CC281EB1833D7E400CADB0C /* UIFont+DTKTextStyles.m in Sources */,
 				3CC281EC1833D7E400CADB0C /* UIFontDescriptor+DTKTextStyles.m in Sources */,
@@ -641,6 +647,7 @@
 				DSTROOT = /tmp/DynamicTypeKit.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "DynamicTypeKit/support/DynamicTypeKit-prefix.pch";
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
