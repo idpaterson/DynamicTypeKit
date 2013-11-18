@@ -53,11 +53,10 @@ static NSArray * _protectedAttributesForStyledFonts;
 
     // Changing these attributes would result in a significantly different font
     // than the style intended.
-    _protectedAttributesForStyledFonts = @[UIFontDescriptorFamilyAttribute,
-                                           UIFontDescriptorNameAttribute,
-                                           UIFontDescriptorFaceAttribute,
-                                           UIFontDescriptorSizeAttribute,
-                                           UIFontDescriptorVisibleNameAttribute];
+    // FIXME: find whether there are any attributes that could not be modified
+    // by adding traits or other harmless modifications. The idea is to avoid
+    // switching to an entirely different font.
+    _protectedAttributesForStyledFonts = @[];
 }
 
 + (void)DTK_registerFontDescriptors:(NSDictionary *)descriptorsByContentSizeCategory forCustomTextStyle:(NSString *)style

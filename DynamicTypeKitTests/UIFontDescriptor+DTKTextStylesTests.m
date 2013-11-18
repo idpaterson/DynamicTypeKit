@@ -8,6 +8,7 @@
 
 #import "DynamicTypeKitTestCase.h"
 
+#import "UIApplication+DTKTextStyles.h"
 #import "UIFontDescriptor+DTKTextStyles.h"
 #import "UIFontDescriptor+DTKTextStylesProtected.h"
 
@@ -135,22 +136,6 @@
    NSString * fontNamePrefix = @"A";
    UIFontDescriptor * descriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
    UIFont * matchingFont = [UIFont fontWithDescriptor:descriptor size:0.0f];
-   UIFontDescriptor * matchingDescriptor = matchingFont.fontDescriptor;
-   NSDictionary * fontAttributes = matchingDescriptor.fontAttributes;
-
-   assertThat(fontAttributes[UIFontDescriptorTextStyleAttribute], equalTo(textStyle));
-   assertThat(fontAttributes[UIFontDescriptorNameAttribute], startsWith(fontNamePrefix));
-}
-
-- (void)testPreferredFontDescriptorWithCustomTextStyleDropsConflictingAttributesUponFontCreation
-{
-   [self registerABCTextStyles];
-
-   NSString * textStyle = @"A";
-   NSString * fontNamePrefix = @"A";
-   UIFontDescriptor * descriptor = [UIFontDescriptor preferredFontDescriptorWithTextStyle:textStyle];
-   UIFontDescriptor * conflictingDescriptor = [descriptor fontDescriptorWithFamily:@"Helvetica"];
-   UIFont * matchingFont = [UIFont fontWithDescriptor:conflictingDescriptor size:0.0f];
    UIFontDescriptor * matchingDescriptor = matchingFont.fontDescriptor;
    NSDictionary * fontAttributes = matchingDescriptor.fontAttributes;
 
