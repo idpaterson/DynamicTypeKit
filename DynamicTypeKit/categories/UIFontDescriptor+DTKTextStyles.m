@@ -299,6 +299,189 @@ static NSArray * _protectedAttributesForStyledFonts;
     }
 }
 
+#pragma mark - UIWebView support
+
++ (NSString *)DTK_cssFontFaceDeclarationsForCustomTextStylesForPreferredContentSizeCategory
+{
+    @synchronized(_fontDescriptorsByContentSizeCategoryByCustomTextStyle)
+    {
+        NSMutableArray * allValues = [NSMutableArray arrayWithCapacity:_fontDescriptorsByContentSizeCategoryByCustomTextStyle.count];
+        NSString * contentSizeCategory = [UIApplication sharedApplication].preferredContentSizeCategory;
+        UIFontDescriptor * descriptor;
+
+        for (NSDictionary * fontDescriptorsByContentSizeCategory in _fontDescriptorsByContentSizeCategoryByCustomTextStyle.allValues)
+        {
+            descriptor = fontDescriptorsByContentSizeCategory[contentSizeCategory];
+
+            [allValues addObject:descriptor.DTK_cssFontFaceDeclaration];
+        }
+        
+        return [allValues componentsJoinedByString:@""];
+    }
+}
+
++ (NSString *)DTK_cssFontFaceDeclarationForFontDescriptor:(UIFontDescriptor *)descriptor
+{
+    UIFontDescriptor * matchingDescriptor = [descriptor matchingFontDescriptorsWithMandatoryKeys:nil].firstObject;
+    NSMutableArray * cssDescriptors = [NSMutableArray array];
+    NSDictionary * fontAttributes = matchingDescriptor.fontAttributes;
+    UIFontDescriptorSymbolicTraits symbolicTraits = matchingDescriptor.symbolicTraits;
+    NSString * value;
+    NSString * cssDescriptor;
+
+    // The name by which to represent the font in CSS
+    value = fontAttributes[UIFontDescriptorTextStyleAttribute];
+    if (value)
+    {
+        cssDescriptor = [NSString stringWithFormat:@"font-family:\"%@\"", value];
+        [cssDescriptors addObject:cssDescriptor];
+    }
+
+    // The system name for the font
+    value = fontAttributes[UIFontDescriptorNameAttribute];
+    if (value)
+    {
+        cssDescriptor = [NSString stringWithFormat:@"src:local(\"%@\")", value];
+        [cssDescriptors addObject:cssDescriptor];
+    }
+
+    if ((symbolicTraits & UIFontDescriptorTraitBold) != 0)
+    {
+        cssDescriptor = @"font-weight:bold";
+        [cssDescriptors addObject:cssDescriptor];
+    }
+
+    if ((symbolicTraits & UIFontDescriptorTraitItalic) != 0)
+    {
+        cssDescriptor = @"font-style:italic";
+        [cssDescriptors addObject:cssDescriptor];
+    }
+
+    if ((symbolicTraits & UIFontDescriptorTraitCondensed) != 0)
+    {
+        cssDescriptor = @"font-stretch:condensed";
+        [cssDescriptors addObject:cssDescriptor];
+    }
+    else if ((symbolicTraits & UIFontDescriptorTraitExpanded) != 0)
+    {
+        cssDescriptor = @"font-stretch:expanded";
+        [cssDescriptors addObject:cssDescriptor];
+    }
+
+    return [NSString stringWithFormat:@"@font-face {%@;}", [cssDescriptors componentsJoinedByString:@";"]];
+}
+
+- (NSString *)DTK_cssFontFaceDeclaration
+{
+    NSMutableSet * variations = [NSMutableSet set];
+    Class fontDescriptorClass = [self class];
+    UIFontDescriptor * fontDescriptor;
+    NSString * cssFontFaceDeclaration;
+
+    fontDescriptor = [self fontDescriptorWithSymbolicTraits:0];
+    cssFontFaceDeclaration = [fontDescriptorClass DTK_cssFontFaceDeclarationForFontDescriptor:fontDescriptor];
+    [variations addObject:cssFontFaceDeclaration];
+
+    fontDescriptor = [self fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+    cssFontFaceDeclaration = [fontDescriptorClass DTK_cssFontFaceDeclarationForFontDescriptor:fontDescriptor];
+    [variations addObject:cssFontFaceDeclaration];
+
+    fontDescriptor = [self fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitItalic];
+    cssFontFaceDeclaration = [fontDescriptorClass DTK_cssFontFaceDeclarationForFontDescriptor:fontDescriptor];
+    [variations addObject:cssFontFaceDeclaration];
+
+    fontDescriptor = [self fontDescriptorWithSymbolicTraits:(UIFontDescriptorTraitBold |
+                                                             UIFontDescriptorTraitItalic)];
+    cssFontFaceDeclaration = [fontDescriptorClass DTK_cssFontFaceDeclarationForFontDescriptor:fontDescriptor];
+    [variations addObject:cssFontFaceDeclaration];
+
+    return [variations.allObjects componentsJoinedByString:@""];
+}
+
++ (NSArray *)DTK_cssFontRuleValuesForCustomTextStylesForPreferredContentSizeCategory
+{
+    @synchronized(_fontDescriptorsByContentSizeCategoryByCustomTextStyle)
+    {
+        NSMutableArray * allValues = [NSMutableArray arrayWithCapacity:_fontDescriptorsByContentSizeCategoryByCustomTextStyle.count];
+        NSString * contentSizeCategory = [UIApplication sharedApplication].preferredContentSizeCategory;
+        UIFontDescriptor * descriptor;
+
+        for (NSMutableDictionary * fontDescriptorsByContentSizeCategory in _fontDescriptorsByContentSizeCategoryByCustomTextStyle.allValues)
+        {
+            descriptor = fontDescriptorsByContentSizeCategory[contentSizeCategory];
+
+            if (!descriptor)
+            {
+                descriptor = [self DTK_fontDescriptorByInterpolatingDescriptors:fontDescriptorsByContentSizeCategory
+                                                          toContentSizeCategory:contentSizeCategory];
+            }
+
+            [allValues addObject:descriptor.DTK_cssFontRuleValuesForPreferredContentSizeCategory];
+        }
+
+        return allValues;
+    }
+}
+
+- (NSDictionary *)DTK_cssFontRuleValuesForPreferredContentSizeCategory
+{
+    NSMutableDictionary * cssFontRuleValues = [NSMutableDictionary new];
+    UIFontDescriptorSymbolicTraits symbolicTraits = self.symbolicTraits;
+    NSDictionary * fontAttributes = self.fontAttributes;
+    NSString * value;
+
+    // The name by which to represent the font in CSS
+    value = fontAttributes[UIFontDescriptorTextStyleAttribute];
+    if (value)
+    {
+        cssFontRuleValues[@"textStyle"] = value;
+    }
+
+    // The system name for the font
+    value = fontAttributes[UIFontDescriptorNameAttribute];
+    if (value)
+    {
+        cssFontRuleValues[@"fontFamily"] = value;
+    }
+
+    cssFontRuleValues[@"fontSize"] = [NSString stringWithFormat:@"%.0fpx", self.pointSize];
+
+    if ((symbolicTraits & UIFontDescriptorTraitBold) != 0)
+    {
+        cssFontRuleValues[@"fontWeight"] = @"bold";
+    }
+
+    if ((symbolicTraits & UIFontDescriptorTraitItalic) != 0)
+    {
+        cssFontRuleValues[@"fontStyle"] = @"italic";
+    }
+
+    if ((symbolicTraits & UIFontDescriptorTraitCondensed) != 0)
+    {
+        cssFontRuleValues[@"fontStretch"] = @"condensed";
+    }
+    else if ((symbolicTraits & UIFontDescriptorTraitExpanded) != 0)
+    {
+        cssFontRuleValues[@"fontStretch"] = @"expanded";
+    }
+
+    return cssFontRuleValues;
+}
+
++ (void)DTK_updateCSSForPreferredContentSizeCategoryInWebView:(UIWebView *)webView
+{
+    NSArray * cssFontRuleValues = [self DTK_cssFontRuleValuesForCustomTextStylesForPreferredContentSizeCategory];
+    NSData * cssFontRuleValuesJSON = [NSJSONSerialization dataWithJSONObject:cssFontRuleValues options:0 error:NULL];
+    NSString * cssFontFaceDeclarations = [self DTK_cssFontFaceDeclarationsForCustomTextStylesForPreferredContentSizeCategory];
+
+    // Closure compiled, see support/webViewFontManager.js
+    NSString * command = [NSString stringWithFormat:@"(function(k,l){var b=document.createElement('style');b.innerText=l;document.getElementsByTagName('head')[0].appendChild(b);for(var b=document.styleSheets,d=0;d<b.length;d++){var e=b[d].cssRules;if(e)for(var f=0;f<e.length;f++){var a=e[f];if(a.style){a.DTK_originalStyle||(a.DTK_originalStyle={fontWeight:a.style.fontWeight,fontStyle:a.style.fontStyle,fontStretch:a.style.fontStretch});var m=a.DTK_originalStyle,g=a.style.font,h=a.style.fontFamily;(g||h)&&k.forEach(function(b){if(g&&0<=g.indexOf(b.textStyle)||h&&0<=h.indexOf(b.textStyle))return 0>a.cssText.indexOf('@font-face')&&['fontWeight','fontStyle','fontStretch','fontSize'].forEach(function(c){!m[c]&&c in b&&(a.style[c]=b[c])}),!1})}}}})(%@,'%@');",
+                          [[NSString alloc] initWithData:cssFontRuleValuesJSON encoding:NSUTF8StringEncoding],
+                          cssFontFaceDeclarations];
+
+    [webView stringByEvaluatingJavaScriptFromString:command];
+}
+
 #pragma mark - Protected Methods
 
 + (void)DTK_resetCustomTextStyles

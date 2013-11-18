@@ -9,6 +9,7 @@
 #import "DTKDynamicTypeManager.h"
 
 #import "UIApplication+DTKTextStyles.h"
+#import "UIFontDescriptor+DTKTextStyles.h"
 #import "UIView+DTKContentSizeMonitoring.h"
 
 #define getPreferredContentSizeCategory() [UIApplication sharedApplication].preferredContentSizeCategory
@@ -259,6 +260,8 @@
                 contentSizeMultiplier          = @(application.DTK_preferredContentSizeCategoryStandardFontSizeMultiplier);
                 contentSizeDistanceFromDefault = @(application.DTK_preferredContentSizeCategoryDistanceFromDefault);
             }
+
+            [UIFontDescriptor DTK_updateCSSForPreferredContentSizeCategoryInWebView:(id)view];
 
             NSDictionary * eventDetails = @{
                                             @"contentSizeCategory" : contentSizeCategory,
