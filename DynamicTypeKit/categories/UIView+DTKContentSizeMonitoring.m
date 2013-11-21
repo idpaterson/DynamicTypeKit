@@ -29,6 +29,15 @@ static char DTKViewLastKnownContentSizeAttribute;
     {
         // TODO error handling
     }
+
+    success = [self jr_swizzleMethod:@selector(setFrame:)
+                               withMethod:@selector(DTK_setFrame:)
+                                    error:&error];
+
+    if (!success)
+    {
+        // TODO error handling
+    }
 }
 
 - (void)DTK_willMoveToWindow:(UIWindow *)newWindow
@@ -58,6 +67,16 @@ static char DTKViewLastKnownContentSizeAttribute;
     // Removed from a window, track the current content size in case the view is
     // displayed again later.
     else
+    {
+        self.DTK_lastKnownContentSizeCategory = [UIApplication sharedApplication].preferredContentSizeCategory;
+    }
+}
+
+- (void)DTK_setFrame:(CGRect)frame
+{
+    [self DTK_setFrame:frame];
+
+    if (!self.DTK_lastKnownContentSizeCategory)
     {
         self.DTK_lastKnownContentSizeCategory = [UIApplication sharedApplication].preferredContentSizeCategory;
     }
