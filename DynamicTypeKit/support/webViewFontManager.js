@@ -8,64 +8,85 @@
 	styleSheetNode.innerText = fontFaceDeclarations;
 	document.getElementsByTagName('head')[0].appendChild(styleSheetNode);
 
-	var styleSheets = document.styleSheets;
-	for (var sheetIndex = 0; sheetIndex < styleSheets.length; sheetIndex++)
+	var styleSheetsProcessed = 0;
+
+	function updateStyleSheets()
 	{
-		var styleSheet = styleSheets[sheetIndex];
-		var cssRules   = styleSheet.cssRules;
+		var styleSheets = document.styleSheets;
+		styleSheetsProcessed = styleSheets.length;
 
-		if (!cssRules)
+		for (var sheetIndex = 0; sheetIndex < styleSheets.length; sheetIndex++)
 		{
-			continue;
-		}
+			var styleSheet = styleSheets[sheetIndex];
+			var cssRules   = styleSheet.cssRules;
 
-		for (var ruleIndex = 0; ruleIndex < cssRules.length; ruleIndex++)
-		{
-			var cssRule = cssRules[ruleIndex];
-
-			if (!cssRule.style)
+			if (!cssRules)
 			{
 				continue;
 			}
 
-			// Keep a reference to the original font style
-			if (!cssRule.DTK_originalStyle)
+			for (var ruleIndex = 0; ruleIndex < cssRules.length; ruleIndex++)
 			{
-				cssRule.DTK_originalStyle = {
-					fontWeight:  cssRule.style.fontWeight,
-					fontStyle:   cssRule.style.fontStyle,
-					fontStretch: cssRule.style.fontStretch
-				};
-			}
+				var cssRule = cssRules[ruleIndex];
 
-			var originalStyle = cssRule.DTK_originalStyle;
-			var font          = cssRule.style.font;
-			var fontFamily    = cssRule.style.fontFamily;
-
-			if (!font && !fontFamily)
-			{
-				continue;
-			}
-
-			fontDescriptors.forEach(function(fontDescriptor)
-			{
-				if ((font && font.indexOf(fontDescriptor.textStyle) >= 0) ||
-					(fontFamily && fontFamily.indexOf(fontDescriptor.textStyle) >= 0))
+				if (!cssRule.style)
 				{
-					if (cssRule.cssText.indexOf('@font-face') < 0)
-					{
-						['fontWeight', 'fontStyle', 'fontStretch', 'fontSize'].forEach(function(rule)
-						{
-							if (!originalStyle[rule] && (rule in fontDescriptor))
-							{
-								cssRule.style[rule] = fontDescriptor[rule];
-							}
-						});
-					}
-
-					return false;
+					continue;
 				}
-			});
+
+				// Keep a reference to the original font style
+				if (!cssRule.DTK_originalStyle)
+				{
+					cssRule.DTK_originalStyle = {
+						fontWeight:  cssRule.style.fontWeight,
+						fontStyle:   cssRule.style.fontStyle,
+						fontStretch: cssRule.style.fontStretch
+					};
+				}
+
+				var originalStyle = cssRule.DTK_originalStyle;
+				var font          = cssRule.style.font;
+				var fontFamily    = cssRule.style.fontFamily;
+
+				if (!font && !fontFamily)
+				{
+					continue;
+				}
+
+				fontDescriptors.forEach(function(fontDescriptor)
+				{
+					if ((font && font.indexOf(fontDescriptor.textStyle) >= 0) ||
+						(fontFamily && fontFamily.indexOf(fontDescriptor.textStyle) >= 0))
+					{
+						if (cssRule.cssText.indexOf('@font-face') < 0)
+						{
+							['fontWeight', 'fontStyle', 'fontStretch', 'fontSize'].forEach(function(rule)
+							{
+								if (!originalStyle[rule] && (rule in fontDescriptor))
+								{
+									cssRule.style[rule] = fontDescriptor[rule];
+								}
+							});
+						}
+
+						return false;
+					}
+				});
+			}
 		}
 	}
+
+	function checkStyleSheets() {
+		if (document.styleSheets.length > styleSheetsProcessed)
+		{
+			updateStyleSheets();
+		}
+
+		if (document.readyState != 'completed')
+		{
+			setTimeout(checkStyleSheets, 20);
+		}
+	}
+
+	checkStyleSheets();
 })();
