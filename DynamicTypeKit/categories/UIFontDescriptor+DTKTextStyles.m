@@ -475,14 +475,17 @@ static NSArray * _protectedAttributesForStyledFonts;
     NSString * cssFontFaceDeclarations = [self DTK_cssFontFaceDeclarationsForCustomTextStylesForPreferredContentSizeCategory];
 
     // Closure compiled, see support/webViewFontManager.js
-    NSString * command = [NSString stringWithFormat:@"(function(p,q){function r(){var e=document.styleSheets;m=e.length;for(var f=0;f<e.length;f++){"
-                          "var g=e[f].cssRules;if(g)for(var h=0;h<g.length;h++){var a=g[h];if(a.style){a.DTK_originalStyle||(a.DTK_originalStyle="
-                          "{fontWeight:a.style.fontWeight,fontStyle:a.style.fontStyle,fontStretch:a.style.fontStretch});var d=a.DTK_originalStyle,"
-                          "k=a.style.font,l=a.style.fontFamily;(k||l)&&p.forEach(function(b){if(k&&0<=k.indexOf(b.textStyle)||l&&0<=l.indexOf(b.textStyle))"
-                          "return 0>a.cssText.indexOf('@font-face')&&['fontWeight','fontStyle','fontStretch','fontSize'].forEach(function(c){!d[c]&&"
-                          "c in b&&(a.style[c]=b[c])}),!1})}}}}function d(){document.styleSheets.length>m&&r();'completed'!=document.readyState&&"
-                          "setTimeout(d,20)}var n=document.createElement('style');n.innerText=q;document.getElementsByTagName('head')[0].appendChild(n);"
-                          "var m=0;d()})(%@,'%@');",
+    NSString * command = [NSString stringWithFormat:@"(function(l,d){function m(){var a=document.styleSheets;k=a.length;"
+                          "for(var b=0;b<a.length;b++){var e=a[b].cssRules;if(e)for(var f=0;f<e.length;f++){var c=e[f];"
+                          "if(c.style){c.DTK_originalStyle||(c.DTK_originalStyle={fontWeight:c.style.fontWeight,fontStyle:"
+                          "c.style.fontStyle,fontStretch:c.style.fontStretch});var d=c.DTK_originalStyle,g=c.style.font,h="
+                          "c.style.fontFamily;(g||h)&&l.forEach(function(a){if(g&&0<=g.indexOf(a.textStyle)||h&&0<="
+                          "h.indexOf(a.textStyle))return 0>c.cssText.indexOf('@font-face')&&['fontWeight','fontStyle','"
+                          "fontStretch','fontSize'].forEach(function(b){!d[b]&&b in a&&(c.style[b]=a[b])}),!1})}}}}"
+                          "function b(){try{document.styleSheets.length>k&&m(),'complete'!=document.readyState&&setTimeout(b,20)"
+                          "}catch(a){setTimeout(b,20)}}var k=0;(function(){if(!document.getElementById('dtk_fontFaceDeclarations'))"
+                          "{var a=document.createElement('style');a.id='dtk_fontFaceDeclarations';a.innerText=d;"
+                          "document.getElementsByTagName('head')[0].appendChild(a)}b()})()})(%@,'%@');",
                           [[NSString alloc] initWithData:cssFontRuleValuesJSON encoding:NSUTF8StringEncoding],
                           cssFontFaceDeclarations];
 

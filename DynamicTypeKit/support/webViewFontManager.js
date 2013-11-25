@@ -1,13 +1,5 @@
 (function(fontDescriptors, fontFaceDeclarations) {
 
-	// Add a stylesheet with the latest @font-face declarations.
-	// Since the font family or weight could change based on the size,
-	// this is updated when the text size changes regardless of having no
-	// explicit text size metadata.
-	var styleSheetNode       = document.createElement('style');
-	styleSheetNode.innerText = fontFaceDeclarations;
-	document.getElementsByTagName('head')[0].appendChild(styleSheetNode);
-
 	var styleSheetsProcessed = 0;
 
 	function updateStyleSheets()
@@ -77,16 +69,39 @@
 	}
 
 	function checkStyleSheets() {
-		if (document.styleSheets.length > styleSheetsProcessed)
-		{
-			updateStyleSheets();
-		}
+		try {
+			if (document.styleSheets.length > styleSheetsProcessed)
+			{
+				updateStyleSheets();
+			}
 
-		if (document.readyState != 'completed')
+			if (document.readyState != 'complete')
+			{
+				setTimeout(checkStyleSheets, 20);
+			}
+		}
+		catch (e) 
 		{
 			setTimeout(checkStyleSheets, 20);
 		}
 	}
 
-	checkStyleSheets();
+	function start() {
+		// Before processing any existing stylesheets, add the @font-face declarations
+		if (!document.getElementById('dtk_fontFaceDeclarations'))
+		{
+			// Add a stylesheet with the latest @font-face declarations.
+			// Since the font family or weight could change based on the size,
+			// this is updated when the text size changes regardless of having no
+			// explicit text size metadata.
+			var styleSheetNode       = document.createElement('style');
+			styleSheetNode.id        = 'dtk_fontFaceDeclarations';
+			styleSheetNode.innerText = fontFaceDeclarations;
+			document.getElementsByTagName('head')[0].appendChild(styleSheetNode);
+		}
+
+		checkStyleSheets();
+	}
+
+	start();
 })();
