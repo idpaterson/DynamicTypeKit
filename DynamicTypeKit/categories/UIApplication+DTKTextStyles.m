@@ -91,10 +91,16 @@ static const NSUInteger _indexOfFirstAccessibilitySizeCategory = 7;
 
 - (CGFloat)DTK_preferredContentSizeCategoryStandardFontSizeMultiplier
 {
-    UIFontDescriptor * bodyFontDescriptor  = [UIFontDescriptor preferredFontDescriptorWithTextStyle:UIFontTextStyleBody];
-    CGFloat            defaultBodyFontSize = [UIFont labelFontSize];
+    // FIXME: This assumes a linear increase in font size, while the built-in
+    // fonts as given by +preferredFontDescriptorWithTextStyle: increases at a
+    // faster rate for accessibility size categories. Since the automatic
+    // interpolation in this library currently assumes a linear increase across
+    // all sizes, this method assumes that is the case for any font. A potential
+    // fix might introduce a similar method based on a specific text style.
+    NSInteger distanceFromDefault = self.DTK_preferredContentSizeCategoryDistanceFromDefault;
+    CGFloat   defaultBodyFontSize = [UIFont labelFontSize];
 
-    return bodyFontDescriptor.pointSize / defaultBodyFontSize;
+    return (defaultBodyFontSize + distanceFromDefault) / defaultBodyFontSize;
 }
 
 - (BOOL)DTK_isValidContentSizeCategory:(NSString *)contentSizeCategory
