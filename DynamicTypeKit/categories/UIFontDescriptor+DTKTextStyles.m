@@ -378,19 +378,26 @@ static NSArray * _protectedAttributesForStyledFonts;
     UIFontDescriptor * fontDescriptor;
     NSString * cssFontFaceDeclaration;
 
-    fontDescriptor = [self fontDescriptorWithSymbolicTraits:0];
+    // Preserve any traits that are not bold or italic. Otherwise, the font
+    // descriptor may be invalid if traits such as "condensed" are removed.
+    UIFontDescriptorSymbolicTraits traits = (self.symbolicTraits &
+                                             ~UIFontDescriptorTraitBold &
+                                             ~UIFontDescriptorTraitItalic);
+
+    fontDescriptor = [self fontDescriptorWithSymbolicTraits:traits];
     cssFontFaceDeclaration = [fontDescriptorClass DTK_cssFontFaceDeclarationForFontDescriptor:fontDescriptor];
     [variations addObject:cssFontFaceDeclaration];
 
-    fontDescriptor = [self fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+    fontDescriptor = [self fontDescriptorWithSymbolicTraits:traits | UIFontDescriptorTraitBold];
     cssFontFaceDeclaration = [fontDescriptorClass DTK_cssFontFaceDeclarationForFontDescriptor:fontDescriptor];
     [variations addObject:cssFontFaceDeclaration];
 
-    fontDescriptor = [self fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitItalic];
+    fontDescriptor = [self fontDescriptorWithSymbolicTraits:traits | UIFontDescriptorTraitItalic];
     cssFontFaceDeclaration = [fontDescriptorClass DTK_cssFontFaceDeclarationForFontDescriptor:fontDescriptor];
     [variations addObject:cssFontFaceDeclaration];
 
-    fontDescriptor = [self fontDescriptorWithSymbolicTraits:(UIFontDescriptorTraitBold |
+    fontDescriptor = [self fontDescriptorWithSymbolicTraits:(traits |
+                                                             UIFontDescriptorTraitBold |
                                                              UIFontDescriptorTraitItalic)];
     cssFontFaceDeclaration = [fontDescriptorClass DTK_cssFontFaceDeclarationForFontDescriptor:fontDescriptor];
     [variations addObject:cssFontFaceDeclaration];
