@@ -357,6 +357,17 @@ static NSArray * _protectedAttributesForStyledFonts;
         [cssDescriptors addObject:cssDescriptor];
     }
 
+    if ((symbolicTraits & UIFontDescriptorTraitCondensed) != 0)
+    {
+        cssDescriptor = @"font-stretch:condensed";
+        [cssDescriptors addObject:cssDescriptor];
+    }
+    else if ((symbolicTraits & UIFontDescriptorTraitExpanded) != 0)
+    {
+        cssDescriptor = @"font-stretch:expanded";
+        [cssDescriptors addObject:cssDescriptor];
+    }
+
     return [NSString stringWithFormat:@"@font-face {%@;}", [cssDescriptors componentsJoinedByString:@";"]];
 }
 
